@@ -31,3 +31,8 @@ Then activate the created 'biosearch' env:
 
 ### Download PubMed data
 
+## Test
+
+To run all the tests simply run:
+
+> python -m unittest
