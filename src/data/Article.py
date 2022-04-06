@@ -5,4 +5,5 @@ from dataclasses import dataclass
 class Article:
     title: str
     abstract: Optional[str]
+    full_text: Optional[str]
     pmid: str
