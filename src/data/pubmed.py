@@ -1,6 +1,8 @@
 from typing import List, Optional, Tuple
-from src.data.Article import Article
-from src.data.Entity import Entity
+from pymed import PubMed 
+import json 
+from Article import Article
+from Entity import Entity
 
 def download_articles(query: str, start_year: int, end_year: int, max_results: int = 100) -> List[Article]:
     """
@@ -15,7 +17,16 @@ def download_articles(query: str, start_year: int, end_year: int, max_results: i
     Returns:
         A list of Articles.
     """
-    return [Article(title='', abstract='', pmid='', full_text='') for _ in range(max_results)]
+    pubmed = PubMed(tool="PubMad", email="m.natali10@studenti.unipi.it")
+    results = pubmed.query("Some query", max_results=max_results)
+
+    articles = []
+    for article in results:
+        article = article.toJSON()
+        article = json.loads(article)
+        articles.append(Article(title=article['title'], abstract=article['abstract'], 
+                                pmid=article['pubmed_id'], full_text='', publication_data=''))
+    return articles
 
 
 def extract_entities(article: Article, source: str ='abstract | full_text') -> List[Entity]:
@@ -36,7 +47,7 @@ def extract_naive_relations(article: Article, source: str ='abstract | full_text
     return []
 
 
-def get_graph(articles: List[Article], source: str ='abstract | full_text') -> Graph:
+#def get_graph(articles: List[Article], source: str ='abstract | full_text') -> Graph:
     pass
     # using NetworkX
     # and plot
@@ -47,3 +58,6 @@ def download_biobert():
 
 def extract_relations_using_biobert(article: Article, source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     pass
+
+res = download_articles("alzhaimer", 2012, 2020)
+print(res[1])
