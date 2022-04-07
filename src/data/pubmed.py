@@ -2,9 +2,9 @@ from html import entities
 from typing import List, Optional, Tuple
 from pymed import PubMed 
 import json 
-from Article import Article
-from Entity import Entity
 import requests
+import networkx as nx
+from itertools import product
 
 
 def download_articles(query: str, start_year: int, end_year: int, max_results: int = 100) -> List[Article]:
@@ -74,15 +74,39 @@ def extract_entities(article: Article, source: str ='abstract') -> List[Entity]:
     return entities
 
 
-def extract_naive_relations(article: Article, source: str ='abstract | full_text') -> List[Tuple[Entity]]:
+def extract_naive_relations(articles: List[Article], source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     # Connect each entity returned from 'extract_entities' between all others.
+
+    # lasciata vuota sennò dovevo ricomputare entity qua dentro inutilmente
+
     return []
 
 
-#def get_graph(articles: List[Article], source: str ='abstract | full_text') -> Graph:
-    pass
+def get_graph(articles: List[Article], source: str ='abstract') -> nx.Graph:
     # using NetworkX
     # and plot
+
+    if source != 'abstract' and source != 'full_text':
+        raise ValueError("Invalid source: {}".format(source))
+
+
+    G = nx.Graph()
+
+    nodelist = []
+
+    # adding nodes
+    for article in articles:
+      entities = extract_entities(article, source=source)
+      for entity in entities:
+        nodelist.append(entity.get_dictionary())
+      G.add_nodes_from(nodelist)
+      nodelist = []
+
+    # adding relationship 
+    G.add_edges_from((a,b) for a,b in product(list(G.nodes()), list(G.nodes())) if a != b)
+
+    pos = nx.circular_layout(G)
+    nx.draw(G, pos, with_labels=True, arrows=True, node_size=700)
 
 def download_biobert():
     # download and save it somewhere..
@@ -90,7 +114,3 @@ def download_biobert():
 
 def extract_relations_using_biobert(article: Article, source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     pass
-
-res = download_articles("alzhaimer", 2012, 2020)
-entities = extract_entities(res[1])
-print(entities[0].id[0])
