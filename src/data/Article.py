@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from dataclasses import dataclass
 
@@ -7,4 +8,4 @@ class Article:
     abstract: Optional[str]
     full_text: Optional[str]
     pmid: str
-    publication_data: Optional[str] 
+    publication_data: datetime 
