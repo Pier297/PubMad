@@ -1,3 +1,0 @@
-[submodule "biobert-pytorch"]
-	path = biobert-pytorch
-	url = git@github.com:Pier297/biobert-pytorch.git
