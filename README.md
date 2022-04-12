@@ -1,4 +1,4 @@
-# BioSearch
+# PubMad
 
 Literature Mining Python Package
 
@@ -19,20 +19,24 @@ https://github.com/dmis-lab/biobert
 
 ## Quick running guide
 
-### Create Conda Environment
+Clone this repo
 
-To use first create a Conda environment with the required packages by running:
+> git clone git@github.com:Pier297/PubMad.git
 
-> conda env create -f environment.yml
+CD in the directiory
 
-Then activate the created 'biosearch' env:
+> cd PubMad
 
-> conda activate biosearch
+Download the submodules by running:
 
-### Download PubMed data
+> git submodule init
 
-## Test
+> git submodule update
 
-To run all the tests simply run:
+Create the conda env
 
-> python -m unittest
+> conda create -n pubmad python=3.9
+
+> conda activate pubmad
+
+TODO: Installare i pacchetti (pytorch, ...)
