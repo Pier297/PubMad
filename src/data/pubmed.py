@@ -4,8 +4,10 @@ from pymed import PubMed
 import json 
 import requests
 import networkx as nx
+from datetime import datetime
 from itertools import product
-
+from Article import Article
+from Entity import Entity 
 
 def download_articles(query: str, start_year: int, end_year: int, max_results: int = 100) -> List[Article]:
     """
@@ -21,14 +23,16 @@ def download_articles(query: str, start_year: int, end_year: int, max_results: i
         A list of Articles.
     """
     pubmed = PubMed(tool="PubMad", email="m.natali10@studenti.unipi.it")
-    results = pubmed.query("Some query", max_results=max_results)
+    results = pubmed.query('(' + query + '[Title])' + ' AND ' + '(("' + str(start_year) + '"[Date - Create] :"' + str(end_year) + '"[Date - Create]))', max_results=max_results)
 
     articles = []
     for article in results:
         article = article.toJSON()
         article = json.loads(article)
+        print(article['publication_date'])
         articles.append(Article(title=article['title'], abstract=article['abstract'], 
-                                pmid=article['pubmed_id'], full_text='', publication_data=''))
+                                pmid=article['pubmed_id'], full_text='', publication_data=datetime.strptime(article['publication_date'], '%Y-%m-%d')))
+    #print(articles[0])
     return articles
 
 
@@ -114,3 +118,6 @@ def download_biobert():
 
 def extract_relations_using_biobert(article: Article, source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     pass
+
+res = download_articles("alzheimer", 2012, 2020)
+print(res[1])
