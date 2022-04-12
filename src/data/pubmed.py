@@ -43,7 +43,6 @@ def query_plain(text, url="http://bern2.korea.ac.kr/plain"):
     if result.status_code != 200:
         raise ValueError("Error {}: {}".format(result.status_code, result.text))
     return result.json()
-
 def extract_entities(article: Article, source: str ='abstract') -> List[Entity]:
     """
     Extract entities from an article using BERN2 (online).
@@ -71,11 +70,44 @@ def extract_entities(article: Article, source: str ='abstract') -> List[Entity]:
     annotations = bern_result['annotations']
     entities = []
     for entity in annotations:
-        new_entity = Entity(id=entity['id'], mention=entity['mention'], obj=entity['obj'], prob=entity['prob'])
-        entities.append(new_entity)
+        if (entity['obj'] == 'disease' or entity['obj'] == 'gene'):
+            new_entity = Entity(id=entity['id'], mention=entity['mention'], obj=entity['obj'], prob=entity['prob'], span_begin=entity['span']['begin'], span_end=entity['span']['end'])
+            entities.append(new_entity)
 
     return entities
 
+def mask_entities(article : Article, entities: List[Entity]) -> List[str]:
+    """
+    Mask entities in an article.
+
+    Args:
+        article: The article to mask entities in. 
+        entities: The entities to mask. 
+
+    Returns:
+        A list of masked articles. 
+    """
+
+    abstract = article.abstract
+
+    #divide entities in gene and disease entities
+    gene_entities = []
+    disease_entities = []
+    for entity in entities:
+        if (entity.obj == "disease"):
+            disease_entities.append(entity)
+        else:
+            gene_entities.append(entity)
+
+    masked_articles = []
+    for gene_entity in gene_entities:
+        for disease_entity in disease_entities:
+            if (gene_entity.span_begin < disease_entity.span_begin):
+                masked_articles.append(abstract[:gene_entity.span_begin] + "@GENE$" + abstract[gene_entity.span_end:disease_entity.span_begin] + "@DISEASE$" + abstract[disease_entity.span_end:])
+            else:
+                masked_articles.append(abstract[:disease_entity.span_begin] + "@DISEASE$" + abstract[disease_entity.span_end:gene_entity.span_begin] + "@GENE$" + abstract[gene_entity.span_end:])
+  
+    return masked_articles
 
 def extract_naive_relations(articles: List[Article], source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     # Connect each entity returned from 'extract_entities' between all others.
