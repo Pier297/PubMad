@@ -19,6 +19,8 @@ https://github.com/dmis-lab/biobert
 
 ## Quick running guide
 
+Install git lfs https://git-lfs.github.com/
+
 Clone this repo
 
 > git clone git@github.com:Pier297/PubMad.git
