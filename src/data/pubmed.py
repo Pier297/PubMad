@@ -29,7 +29,6 @@ def download_articles(query: str, start_year: int, end_year: int, max_results: i
     for article in results:
         article = article.toJSON()
         article = json.loads(article)
-        print(article['publication_date'])
         articles.append(Article(title=article['title'], abstract=article['abstract'], 
                                 pmid=article['pubmed_id'], full_text='', publication_data=datetime.strptime(article['publication_date'], '%Y-%m-%d')))
     #print(articles[0])
@@ -119,5 +118,14 @@ def download_biobert():
 def extract_relations_using_biobert(article: Article, source: str ='abstract | full_text') -> List[Tuple[Entity]]:
     pass
 
-res = download_articles("alzheimer", 2012, 2020)
-print(res[1])
+
+if __name__ == "__main__":
+    res = download_articles("alzheimer", 2012, 2020)
+    
+    print('\n\n\n')
+    
+    print(res[1])
+
+    print('\n\n\n')
+
+    print(extract_entities(res[1]))
