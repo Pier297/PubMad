@@ -1,0 +1,3 @@
+[submodule "BioBERT"]
+	path = BioBERT
+	url = git@github.com:Pier297/BioBERT.git
