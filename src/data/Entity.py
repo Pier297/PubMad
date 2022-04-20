@@ -11,6 +11,8 @@ class Entity:
     mention: str
     obj: str
     prob: float
+    span_begin: int
+    span_end: int
 
     def get_dictionary(self):
       return (self.id[0], {'mention': self.mention, 'obj' : self.obj, 'prob':self.prob})
